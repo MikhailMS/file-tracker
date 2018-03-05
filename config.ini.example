@@ -1,0 +1,7 @@
+[main]
+dirs_to_track    = path/to/directory/where/files/present, one/more/path, another/one/path 
+storage_file     = storage.json
+log_file         = progress-log
+update_interval  = 5
+execute_commands = command-to-execute-when-tracked-files-changed, one-more-shell-command 
+
