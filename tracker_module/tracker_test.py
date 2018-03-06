@@ -3,11 +3,18 @@ import os
 import sys
 from os.path import join
 from tracker import Tracker
+from ConfigParser import SafeConfigParser
 
 class TestTrackerMethods(unittest.TestCase):
     def test_init(self):
-        tracker = Tracker(join(sys.path[0], 'test_config.ini'))
-        self.assertEqual(tracker.path_to_files, ['/Users/mishamolotkov/Desktop/file_tracker_test/'])
+        config_path = join(sys.path[0], 'test_config.ini')
+        tracker = Tracker(config_path)
+
+        config = SafeConfigParser()
+        config.read(config_path)
+        paths = [path.strip() for path in config.get('main', 'dirs_to_track').split(',')]
+
+        self.assertEqual(tracker.path_to_files, paths)
         self.assertEqual(tracker.path_to_storage, 'storage.json')
         self.assertEqual(tracker.path_to_log, 'progress-log')
         self.assertEqual(tracker.update_interval, 5)

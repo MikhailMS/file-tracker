@@ -10,5 +10,9 @@ Simple python script that keeps an eye on the files and executes requested shell
 6.  Add shell commands, that should be executed when any of the files has been changed
 
 ## How to run
-1.  To run script execute `python tracker.py -s config.ini`
-2.  To run script in background execute `nohup python tracker.py -s config.ini &`
+1.  To run script execute `python main.py -s config.ini`
+2.  To run script in background execute `nohup python main.py -s config.ini &`
+
+## How to test
+1.  Create test .ini file inside *tracker_module* folder - `cp config.ini.example tracker_module/test_config.ini` and change settings accordingly
+2.  Execute `python tracker_module/tracker_test.py`
