@@ -1,6 +1,7 @@
 import os
 import platform
-import sys, getopt
+import sys
+import getopt
 import json
 import time
 import signal
@@ -10,7 +11,7 @@ from os.path import isfile, join
 from datetime import datetime
 
 class Tracker(object):
-    
+
     update_state_msg         = "Updating current state ~>"
     update_json_msg          = "JSON update initiated ~>"
     update_tracked_files_msg = "Updating list of files, that are tracked ~>"
@@ -24,7 +25,14 @@ class Tracker(object):
         signal.signal(signal.SIGTERM, self.shut_down)
 
         config = SafeConfigParser()
-        config.read(path_to_setup)
+
+        if isfile(path_to_setup):
+            config.read(path_to_setup)
+        else:
+            try:
+                sys.exit(0)
+            except SystemExit:
+                print "\nNo configuration file found"
 
         self.path_to_files    = [path.strip() for path in config.get('main', 'dirs_to_track').split(',')]
         self.path_to_storage  = config.get('main', 'storage_file')
@@ -39,21 +47,24 @@ class Tracker(object):
             data = {}
             with open(self.path_to_storage, 'r') as js:
                 data = json.load(js)
+
             for key in data.iterkeys():
-                self.tracked_files.append(key) 
+                self.tracked_files.append(key)
+
+            self.current_state = data
         else:
             self.tracked_files   = [[join(path, file) for file in listdir(path) if isfile(join(path, file))] for path in self.path_to_files]
             self.tracked_files   = [file for sublist in self.tracked_files for file in sublist]
 
     def creation_date(self, path_to_file):
         """ PRIVATE
-        Try to get the date that a file was modified
+        Try to get the date that a file was created(modified)
         """
         if platform.system() == 'Windows':
             return os.path.getctime(path_to_file)
-        else:
-            stat = os.stat(path_to_file)
-            return stat.st_mtime
+
+        stat = os.stat(path_to_file)
+        return stat.st_mtime
 
     def write_to_log(self, *arg):
         """ PRIVATE
@@ -76,7 +87,7 @@ class Tracker(object):
 
         with open(self.path_to_storage, 'w') as js:
             json.dump(old_data, js)
-        
+
         self.write_to_log(self.update_json_msg, str(old_data))
 
     def update_happend(self):
@@ -86,7 +97,7 @@ class Tracker(object):
         old_data = {}
         with open(self.path_to_storage, 'r') as js:
             old_data = json.load(js)
-        
+
         if cmp(self.current_state, old_data) == 0:
             self.triggered = False
         else:
@@ -107,23 +118,23 @@ class Tracker(object):
         else:
             with open(self.path_to_storage, 'w') as js:
                 json.dump(self.current_state, js)
-        
+
                 self.write_to_log(self.write_to_storage_msg, str(self.current_state))
 
     def update_current_state(self):
         for file in self.tracked_files:
             self.current_state[file] = self.creation_date(file)
-        
+
         self.write_to_log(self.update_state_msg, str(self.current_state))
 
     def update_tracked_files_list(self):
         file_list = [[join(path, file) for file in listdir(path) if isfile(join(path, file))] for path in self.path_to_files]
         file_list = [file for sublist in self.tracked_files for file in sublist]
-        
+
         new_files = list(set(file_list) - set(self.tracked_files))
         self.tracked_files = self.tracked_files + new_files
 
-        self.write_to_log(update_tracked_files_msg, new_files)
+        self.write_to_log(self.update_tracked_files_msg, new_files)
 
     def run_shell_command(self):
         for command in self.execute_commands:
@@ -146,27 +157,8 @@ class Tracker(object):
 
                 self.update_happend()
                 if self.triggered:
-                     self.run_shell_command()
+                    self.run_shell_command()
                 else:
-                     self.write_to_log(self.no_update_msg)
+                    self.write_to_log(self.no_update_msg)
         except KeyboardInterrupt:
             self.shut_down()
-
-def main(argv):
-   try:
-       opts, args = getopt.getopt(argv, "s:")
-   except getopt.GetoptError:
-      print 'python tracker.py -s <path_to_setup_file> '
-      sys.exit(2)
-   for opt, arg in opts:
-      if opt == '-h':
-         print 'python tracker.py -s <path_to_setup_file> '
-         sys.exit()
-      elif opt in ("-s", "--setup"):
-         # print arg
-         tracker = Tracker(arg)
-         tracker.run_tracker()
-
-if __name__ == "__main__":
-   main(sys.argv[1:])
-

@@ -1,0 +1,5 @@
+*.ini
+*.pyc
+*.json
+*.txt
+progress-log
