@@ -12,13 +12,17 @@ class TestTrackerMethods(unittest.TestCase):
 
         config = SafeConfigParser()
         config.read(config_path)
-        paths = [path.strip() for path in config.get('main', 'dirs_to_track').split(',')]
+        paths            = [path.strip() for path in config.get('main', 'dirs_to_track').split(',')]
+        storage          = config.get('main', 'storage_file')
+        log              = config.get('main', 'log_file')
+        update_interval  = config.getint('main', 'update_interval')
+        execute_commands = [command.strip() for command in config.get('main', 'execute_commands').split(',')]
 
         self.assertEqual(tracker.path_to_files, paths)
-        self.assertEqual(tracker.path_to_storage, 'storage.json')
-        self.assertEqual(tracker.path_to_log, 'progress-log')
-        self.assertEqual(tracker.update_interval, 5)
-        self.assertEqual(tracker.execute_commands, ["echo 'Update'"])
+        self.assertEqual(tracker.path_to_storage, storage)
+        self.assertEqual(tracker.path_to_log, log)
+        self.assertEqual(tracker.update_interval, update_interval)
+        self.assertEqual(tracker.execute_commands, execute_commands)
         self.assertEqual(tracker.tracked_files, [])
         self.assertEqual(tracker.triggered, False)
         self.assertEqual(tracker.current_state, {})
