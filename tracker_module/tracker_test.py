@@ -42,35 +42,32 @@ class TestTrackerMethods(unittest.TestCase):
         tracker.write_to_log("Test message")
 
         lines = ""
-        # with open(join(sys.path[0], tracker.path_to_log), 'r') as log:
         with open(tracker.path_to_log, 'r') as log:
             lines = log.read()
 
         self.assertTrue('Test message' in lines)
 
     def test_update_json(self):
-        s = "placeholder"
+        tracker = Tracker(join(sys.path[0], 'test_config.ini'))
+
 
     def test_update_happend(self):
-        s = "placeholder"
-
-    def test_shut_down(self):
-        s = "placeholder"
+        tracker = Tracker(join(sys.path[0], 'test_config.ini'))
 
     def test_write_to_storage(self):
-        s = "placeholder"
+        tracker = Tracker(join(sys.path[0], 'test_config.ini'))
 
     def test_update_current_state(self):
-        s = "placeholder"
+        tracker = Tracker(join(sys.path[0], 'test_config.ini'))
 
     def test_update_tracked_files_list(self):
-        s = "placeholder"
+        tracker = Tracker(join(sys.path[0], 'test_config.ini'))
 
     def test_run_shell_command(self):
-        s = "placeholder"
+        tracker = Tracker(join(sys.path[0], 'test_config.ini'))
 
     def test_run_tracker(self):
-        s = "placeholder"
+        tracker = Tracker(join(sys.path[0], 'test_config.ini'))
 
 if __name__ == '__main__':
     unittest.main()

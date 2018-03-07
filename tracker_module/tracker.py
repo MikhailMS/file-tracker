@@ -21,6 +21,8 @@ class Tracker(object):
     no_update_msg            = "No changes in tracked files, so shell commands won't be executed"
     shutting_down_msg        = "Shutting down the tracker"
 
+    EXIT_CODE                = 0
+
     """ Variable holder """
     def __init__(self, path_to_setup):
         signal.signal(signal.SIGTERM, self.shut_down)
@@ -30,10 +32,7 @@ class Tracker(object):
         if isfile(path_to_setup):
             config.read(path_to_setup)
         else:
-            try:
-                sys.exit(0)
-            except SystemExit:
-                print "\nNo configuration file found"
+            self.shut_down(msg='No configuration file found')
 
         self.path_to_files    = [path.strip() for path in config.get('main', 'dirs_to_track').split(',')]
         self.path_to_storage  = config.get('main', 'storage_file')
@@ -104,13 +103,24 @@ class Tracker(object):
         else:
             self.triggered = True
 
-    def shut_down(self, signum='', frame=''):
+    def shut_down(self, signum='', frame='', msg=''):
         """ PRIVATE
         Gracefully shuts tracker
         """
-        print "\n" + self.shutting_down_msg
-        self.write_to_log(self.shutting_down_msg)
-        sys.exit()
+        if msg:
+            print "\n" + msg
+            self.write_to_log(msg)
+        else:
+            print "\n" + self.shutting_down_msg
+            self.write_to_log(self.shutting_down_msg)
+
+        try:
+            sys.exit(self.EXIT_CODE)
+        except SystemExit as err:
+            if err.code != self.EXIT_CODE:
+                raise
+            else:
+                os._exit(self.EXIT_CODE)
 
 
     def write_to_storage(self):
