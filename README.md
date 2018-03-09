@@ -16,3 +16,9 @@ Simple python script that keeps an eye on the files and executes requested shell
 ## How to test
 1.  Create test .ini file inside *tracker_module* folder - `cp config.ini.example tracker_module/test_config.ini` and change settings accordingly
 2.  Execute `python tracker_module/tracker_test.py`
+
+## Features for future
+  - [ ] Add patterns support
+  - [ ] Add flag to ignore directories, otherwise track them too
+  - [ ] Add flag to track files recursively 
+  - [ ] Add ability to specify which commands will be executed when particular file(-s) been changed/added/etc
