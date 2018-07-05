@@ -2,7 +2,7 @@
 Simple python script that keeps an eye on the files and executes requested shell commands if any of the tracked files got modified. Simplified version of **fswatch** (https://github.com/emcrisostomo/fswatch)
 
 ## Installation
-1.  `git clone git@gitlab.nat.bt.com:611788519/file-tracker.git`
+1.  `git clone https://github.com/MikhailMS/file-tracker.git`
 2.  `cd file-tracker`
 3.  `cp config.ini.example config.ini`
 4.  Add directories, where you will place files, which need to be tracked
